@@ -1,0 +1,81 @@
+questions:
+#Replica set 
+- variable: "scale"
+  label: Container Scale
+  description: "Container Scale"
+  default: "1"
+  required: true
+  type: string
+  group: "Replica Set"
+  
+  # User input for Scanner container name
+- variable: "container_name"
+  label: Container Name
+  description: "Name of the container to be deployed."
+  default: "sim-edge-app-device-scanner"
+  required: true
+  type: string
+  group: "Siemens Scanner Configurations" 
+  
+  # User input for Scanner Image name
+- variable: "image.repository"
+  label: Image name
+  description: "Name of the Image to be deployed."
+  default: "captain.rtf.siemens.net:8443/simatic_edge/releases/sim-edge-app-device-scanner/sim-edge-app-device-scanner/scanner_integration"
+  required: true
+  type: string
+  group: "Siemens Scanner Configurations" 
+  
+ # User input for Scanner Image tag
+- variable: "image.tag"
+  label: Image Tag
+  description: "Image Tag."
+  default: "0.0.1.23"
+  required: true
+  type: string
+  group: "Siemens Scanner Configurations" 
+  
+- variable: "mqttAddr"
+  label: Mosquitto broker IP
+  description: "display Mosquitto broker IP"
+  default: "localhost:1889"
+  required: true
+  type: string
+  group: "Siemens Scanner Configurations" 
+
+  #service and load balancing
+- variable: service.type
+  default: "ClusterIP"
+  description: "Scanner K8s Service type"
+  type: enum
+  group: "Services and Load Balancing"
+  options:
+    - "ClusterIP"
+    - "NodePort"
+  required: true
+  label: Scanner Service Type
+  show_if: "service.enabled=true"
+  show_subquestion_if: "NodePort"
+  subquestions:
+  - variable: service.nodePort
+    default: ""
+    description: "NodePort port number(to set explicitly, choose port between 30000-32767)"
+    type: int
+    min: 30000
+    max: 32767
+    label: Service NodePort number
+
+  # Used to deploy application on a specific box
+- variable: customResources.enablespecificdownload
+  default: false
+  description: "Download App to a specific device"
+  label: Enable Device Specific Download
+  type: boolean
+  show_subquestion_if: true
+  group: "Download Options"
+  subquestions:
+  - variable: nodeSelector.kubernetes\.io/hostname
+    default: "sim-edge-"
+    description: "Destination Device for App"
+    type: string
+    label: Specific Device
